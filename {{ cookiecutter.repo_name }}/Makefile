@@ -10,9 +10,9 @@ PROJECT_NAME = {{ cookiecutter.repo_name }}
 PYTHON_INTERPRETER = {{ cookiecutter.python_interpreter }}
 
 ifeq (,$(shell which conda))
-HAS_CONDA=False
+HAS_CONDA = False
 else
-HAS_CONDA=True
+HAS_CONDA = True
 endif
 
 #################################################################################
@@ -27,7 +27,7 @@ conda_requirement:
 	conda install -c conda-forge -c bioconda -c biocore --file conda_requirements.txt
 ## Install Dependencies
 dependencies: conda_requirement pip_requirement
-	@echo "Install dependencies"
+	@echo ">>> All dependencies installed"
 ## Preprocess Dataset
 data:
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py
@@ -69,6 +69,45 @@ endif
 ## Test python environment is setup correctly
 test_env:
 	$(PYTHON_INTERPRETER) test_environment.py
+
+#################################################################################
+# SYNC WITH REMOTE RSYNC_SERVER                                                       #
+#################################################################################
+RSYNC_SERVER = {{ cookiecutter.rsync_server }}
+RSYNC_DIR = {{ cookiecutter.rsync_dir }}
+# define the max file size your wanna sync.
+# you can leave this as empty.
+RSYNC_SIZE =
+# define the file name containing the include/exclude patterns.
+# you can leave this as empty
+RSYNC_FILE = rsync.ie
+
+
+# size filter
+ifeq ($(RSYNC_SIZE),)
+    RSYNC_SIZE_FILTER =
+else
+    RSYNC_SIZE_FILTER = --max-size=$(RSYNC_SIZE)
+endif
+
+# check if you have the exclude file
+ifeq ($(wildcard $(RSYNC_FILE)),)
+    RSYNC_FILTER =
+else
+    RSYNC_FILTER = --filter '. $(RSYNC_FILE)'
+endif
+
+RSYNC_FLAGS = -avuhz --prune-empty-dirs $(RSYNC_FILTER) $(RSYNC_SIZE_FILTER) -e ssh
+
+pull:
+	rsync $(RSYNC_FLAGS) -n $(RSYNC_SERVER):$(RSYNC_DIR)/ .
+push:
+	rsync $(RSYNC_FLAGS) -n . $(RSYNC_SERVER):$(RSYNC_DIR)/
+
+pull_real:
+	rsync $(RSYNC_FLAGS) $(RSYNC_SERVER):$(RSYNC_DIR)/ .
+push_real:
+	rsync $(RSYNC_FLAGS) . $(RSYNC_SERVER):$(RSYNC_DIR)/
 
 #################################################################################
 # PROJECT RULES                                                                 #

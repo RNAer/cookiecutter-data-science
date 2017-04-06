@@ -1,0 +1,24 @@
+# Set of include/exclude rules, for more information see 'man rsync'
+
+# Exclude all objectfiles anywhere
+- *.o
+# Exclude all dot-files
+- .*
+# Exclude all dot-directories
+- .*/
+
+# Include the directories we want to sync
++ /
++ /rsync.ie
++ /Makefile
++ doc
++ readme.*
++ *.biom
++ *.txt
+- /*/*untrimmed*
++ /dir_under_the_root/
+# double asterisks is for both / and other char to include subdir
++ /dir_under_the_root/**
+
+# Exclude all the files
+- *
