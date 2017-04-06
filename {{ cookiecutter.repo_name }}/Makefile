@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
+.PHONY: clean data lint pip_requirement conda_requirement dependencies sync_data_to_s3 sync_data_from_s3
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -20,11 +20,16 @@ endif
 #################################################################################
 
 ## Install Python Dependencies
-requirements: test_environment
-	pip install -r requirements.txt
-
-## Make Dataset
-data: requirements
+pip_requirement:
+	pip install -r pip_requirements.txt
+## Install conda Dependencies
+conda_requirement:
+	conda install -c conda-forge -c bioconda -c biocore --file conda_requirements.txt
+## Install Dependencies
+dependencies: conda_requirement pip_requirement
+	@echo "Install dependencies"
+## Preprocess Dataset
+data:
 	$(PYTHON_INTERPRETER) src/data/make_dataset.py
 
 ## Delete all compiled Python files
@@ -44,7 +49,7 @@ sync_data_from_s3:
 	aws s3 sync s3://$(BUCKET)/data/ data/
 
 ## Set up python interpreter environment
-create_environment:
+make_env:
 ifeq (True,$(HAS_CONDA))
 		@echo ">>> Detected conda, creating conda environment."
 ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
@@ -62,7 +67,7 @@ else
 endif
 
 ## Test python environment is setup correctly
-test_environment:
+test_env:
 	$(PYTHON_INTERPRETER) test_environment.py
 
 #################################################################################
@@ -75,7 +80,7 @@ test_environment:
 # Self Documenting Commands                                                     #
 #################################################################################
 
-.DEFAULT_GOAL := show-help
+.DEFAULT_GOAL := help
 
 # Inspired by <http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html>
 # sed script explained:
@@ -92,8 +97,8 @@ test_environment:
 # 	* print line
 # Separate expressions are necessary because labels cannot be delimited by
 # semicolon; see <http://stackoverflow.com/a/11799865/1968>
-.PHONY: show-help
-show-help:
+.PHONY: help
+help:
 	@echo "$$(tput bold)Available rules:$$(tput sgr0)"
 	@echo
 	@sed -n -e "/^## / { \
@@ -110,7 +115,6 @@ show-help:
 		s/\\n/ /g; \
 		p; \
 	}" ${MAKEFILE_LIST} \
-	| LC_ALL='C' sort --ignore-case \
 	| awk -F '---' \
 		-v ncol=$$(tput cols) \
 		-v indent=19 \
