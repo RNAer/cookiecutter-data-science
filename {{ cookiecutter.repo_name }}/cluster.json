@@ -1,0 +1,9 @@
+{
+    "deblur": {
+        "time"      : "12:00:00",
+        "n"         : 16,
+        "mem"       : 16,
+        "output"    : "/dev/null",
+        "error"     : "/dev/null"
+    }
+}

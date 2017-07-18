@@ -1,0 +1,11 @@
+# snakemake -np -j 100 --local-cores 8 --cluster "qsub -V -N {wildcards.sample} -o {log.o} -e {log.e} -l nodes=1:ppn={threads} -l mem={resources.mem}gb -l walltime={resources.time}:00:00"
+
+# snakemake --cores 16 --local-cores 4 -w 90 --cluster-config cluster.json --cluster "qsub -V -e {cluster.error} -o {cluster.output} -l nodes=1:ppn={cluster.n} -l mem={cluster.mem}gb -l walltime={cluster.time}"
+
+# configfile: 'config.yaml'
+
+shell.prefix('echo -e "\n---- BEG: $(date) ----\n" ; ')
+
+rule all:
+    input:
+        expand('')

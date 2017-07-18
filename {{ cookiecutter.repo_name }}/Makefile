@@ -1,4 +1,4 @@
-.PHONY: clean data lint pip_requirement conda_requirement dependencies sync_data_to_s3 sync_data_from_s3
+.PHONY: clean data lint pip_requirement conda_requirement dependencies sync_data_to_s3 sync_data_from_s3 pull push
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -99,20 +99,18 @@ endif
 
 RSYNC_FLAGS = -avuhz --prune-empty-dirs $(RSYNC_FILTER) $(RSYNC_SIZE_FILTER) -e ssh
 
+## push file to the $(RSYNC_SERVER) - dry run
 pull:
 	rsync $(RSYNC_FLAGS) -n $(RSYNC_SERVER):$(RSYNC_DIR)/ .
+## pull file to the $(RSYNC_SERVER) - dry run
 push:
 	rsync $(RSYNC_FLAGS) -n . $(RSYNC_SERVER):$(RSYNC_DIR)/
-
+## push file to the $(RSYNC_SERVER)
 pull_real:
 	rsync $(RSYNC_FLAGS) $(RSYNC_SERVER):$(RSYNC_DIR)/ .
+## pull file to the $(RSYNC_SERVER)
 push_real:
 	rsync $(RSYNC_FLAGS) . $(RSYNC_SERVER):$(RSYNC_DIR)/
-
-#################################################################################
-# PROJECT RULES                                                                 #
-#################################################################################
-
 
 
 #################################################################################
