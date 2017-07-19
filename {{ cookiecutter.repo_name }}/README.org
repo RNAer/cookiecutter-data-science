@@ -1,12 +1,9 @@
-{{cookiecutter.project_name}}
-==============================
+#+TITLE: {{cookiecutter.project_name}}
+
 
 {{cookiecutter.description}}
 
-Project Organization
-------------
-
-    ├── LICENSE
+* Project Organization
     ├── Makefile               <- Makefile with commands like `make data` or `make train`
     ├── README.md              <- The top-level README for developers using this project.
     ├── data
