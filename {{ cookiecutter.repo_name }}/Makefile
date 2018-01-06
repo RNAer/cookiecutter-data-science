@@ -97,7 +97,8 @@ else
     RSYNC_FILTER = --filter '. $(RSYNC_FILE)'
 endif
 
-RSYNC_FLAGS = -avuhz --prune-empty-dirs $(RSYNC_FILTER) $(RSYNC_SIZE_FILTER) -e ssh
+# --links: copy symbolic links literally
+RSYNC_FLAGS = -avuhz --links --prune-empty-dirs $(RSYNC_FILTER) $(RSYNC_SIZE_FILTER) -e ssh
 
 ## push file to the $(RSYNC_SERVER) - dry run
 pull:
